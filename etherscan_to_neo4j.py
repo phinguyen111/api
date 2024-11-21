@@ -1,15 +1,16 @@
 from database_connection import Neo4jConnection
 import requests
 import time
+import os
 
-uri = "neo4j+s://aadff3f9.databases.neo4j.io"
-username = "neo4j"
-password = "TVuvrmUqxBe3u-gDv6oISHDlZKLxUJKz3q8FrOXyWmo"
+uri = os.getenv("NEO4J_URI", "neo4j+s://aadff3f9.databases.neo4j.io")
+username = os.getenv("NEO4J_USER", "neo4j")
+password = os.getenv("NEO4J_PASSWORD", "TVuvrmUqxBe3u-gDv6oISHDlZKLxUJKz3q8FrOXyWmo")
 
 neo4j_connection = Neo4jConnection(uri, username, password)
 
 def fetch_and_save_transactions(address, limit=25):
-    etherscan_api_key = "IGVQMMEFYD8K2DK22ZTFV6WK1RH8KP98IS"
+    etherscan_api_key = os.getenv("ETHERSCAN_API_KEY", "IGVQMMEFYD8K2DK22ZTFV6WK1RH8KP98IS")
     url = f"https://api.etherscan.io/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={etherscan_api_key}"
 
     try:
