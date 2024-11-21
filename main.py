@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, make_response
-from database_connection import connect_to_neo4j  # Hàm kết nối tới Neo4j
-from etherscan_to_neo4j import fetch_and_save_transactions  # Hàm xử lý giao dịch từ Etherscan
+from database_connection import connect_to_neo4j
+from etherscan_to_neo4j import fetch_and_save_transactions
 from dotenv import load_dotenv
 import os
 import time
