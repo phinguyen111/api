@@ -2,12 +2,31 @@ from database_connection import Neo4jConnection
 import requests
 import time
 import os
+import asyncio
 
 uri = os.getenv("NEO4J_URI", "neo4j+s://aadff3f9.databases.neo4j.io")
 username = os.getenv("NEO4J_USER", "neo4j")
 password = os.getenv("NEO4J_PASSWORD", "TVuvrmUqxBe3u-gDv6oISHDlZKLxUJKz3q8FrOXyWmo")
 
 neo4j_connection = Neo4jConnection(uri, username, password)
+
+async def batch_save_to_neo4j(transactions):
+    query = """
+    UNWIND $transactions AS tx
+    MERGE (s:Address {address: tx.from})
+    MERGE (r:Address {address: tx.to})
+    MERGE (t:Transaction {id: tx.hash})
+    ON CREATE SET t.amount = tx.amount, t.timestamp = tx.timestamp
+    MERGE (s)-[:SENT_TO {amount: tx.amount, timestamp: tx.timestamp}]->(t)
+    MERGE (t)-[:RECEIVED_FROM {amount: tx.amount, timestamp: tx.timestamp}]->(r)
+    """
+    for transaction in transactions:
+        # Thực hiện truy vấn và chờ một khoảng thời gian để tuân thủ giới hạn API
+        neo4j_connection.execute_query(query, {"transactions": [transaction]})
+        print(f"Saved transaction {transaction['hash']} to Neo4j")
+        
+        # Chờ 0.2 giây giữa mỗi lần thực thi để đạt 5 calls/sec
+        await asyncio.sleep(0.2)
 
 def fetch_and_save_transactions(address, limit=25):
     etherscan_api_key = os.getenv("ETHERSCAN_API_KEY", "IGVQMMEFYD8K2DK22ZTFV6WK1RH8KP98IS")
