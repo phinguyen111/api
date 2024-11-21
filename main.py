@@ -44,12 +44,12 @@ def home():
 def get_transactions():
     """Fetch transactions for a given address."""
     if request.method == 'OPTIONS':
-        # Phản hồi preflight request
-        response = make_response(jsonify({"message": "Preflight request successful"}))
+        response = make_response()
         response.headers["Access-Control-Allow-Origin"] = "*"
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"]
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"]
         return response
+
     start_time = time.time()  # Bắt đầu theo dõi thời gian xử lý
 
     try:
